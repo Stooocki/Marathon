@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Berlin 2026">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#1a56a0">
+<title>Berlin Marathon 2026</title>
+<link rel="manifest" id="manifest-link">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+:root{
+  --pri:#1a56a0;--pri2:#2563c4;--pri-bg:#EBF4FF;--pri-light:#DBEAFE;
+  --bg:#F0F4F9;--card:#ffffff;
+  --text:#0f172a;--text2:#64748b;--text3:#94a3b8;
+  --border:#e2e8f0;--border2:#cbd5e1;
+  --green:#16a34a;--green-bg:#dcfce7;--green-text:#14532d;
+  --amber:#d97706;--amber-bg:#fef3c7;--amber-text:#78350f;
+  --red:#dc2626;--red-bg:#fee2e2;--red-text:#7f1d1d;
+  --r:16px;--rs:10px;
+  --safe-top: env(safe-area-inset-top);
+  --safe-bot: env(safe-area-inset-bottom);
+}
+html,body{height:100%;background:var(--bg);}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Segoe UI',sans-serif;color:var(--text);overscroll-behavior:none;}
+.app{max-width:430px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;}
+
+/* HEADER */
+.header{
+  background:linear-gradient(135deg,#1a56a0 0%,#2563c4 100%);
+  padding:calc(14px + var(--safe-top)) 20px 16px;
+  position:sticky;top:0;z-index:100;
+}
+.header-inner{display:flex;align-items:center;gap:12px;}
+.logo{width:40px;height:40px;background:rgba(255,255,255,0.15);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.logo svg{width:24px;height:24px;}
+.header-text h1{font-size:17px;font-weight:700;color:#fff;letter-spacing:-.3px;}
+.header-text p{font-size:12px;color:rgba(255,255,255,0.7);margin-top:1px;}
+.countdown-pill{margin-left:auto;background:rgba(255,255,255,0.15);border-radius:20px;padding:5px 11px;text-align:center;flex-shrink:0;}
+.countdown-pill .cd-num{font-size:16px;font-weight:700;color:#fff;line-height:1;}
+.countdown-pill .cd-lbl{font-size:9px;color:rgba(255,255,255,0.7);text-transform:uppercase;letter-spacing:.05em;}
+
+/* NAV */
+.navbar{position:fixed;bottom:0;left:0;right:0;max-width:430px;margin:0 auto;background:var(--card);border-top:1px solid var(--border);display:flex;z-index:100;padding-bottom:var(--safe-bot);}
+.nb{flex:1;padding:10px 4px 8px;border:none;background:transparent;font-size:10px;color:var(--text3);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;font-family:inherit;transition:color .15s;}
+.nb.active{color:var(--pri);}
+.nb svg{width:22px;height:22px;}
+.nb-dot{width:4px;height:4px;border-radius:50%;background:var(--pri);margin-top:1px;display:none;}
+.nb.active .nb-dot{display:block;}
+
+/* SCREENS */
+.screen{display:none;padding:16px 16px 90px;flex:1;}
+.screen.active{display:block;}
+
+/* CARDS */
+.card{background:var(--card);border-radius:var(--r);margin-bottom:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.06);}
+.card-pad{padding:14px 16px;}
+.card-divider{border-top:1px solid var(--border);}
+
+/* STAT GRID */
+.sg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.sc{background:var(--card);border-radius:var(--r);padding:13px 14px;box-shadow:0 1px 3px rgba(0,0,0,.06);}
+.sc .sl{font-size:11px;color:var(--text2);margin-bottom:4px;font-weight:500;}
+.sc .sv{font-size:22px;font-weight:700;color:var(--text);}
+.sc .ss{font-size:11px;color:var(--text3);margin-top:2px;}
+
+/* SECTION LABEL */
+.stl{font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;margin:18px 0 8px;padding:0 2px;}
+
+/* PROGRESS BAR */
+.pb{height:5px;background:var(--border);border-radius:3px;margin-top:6px;}
+.pf{height:5px;background:var(--pri);border-radius:3px;transition:width .3s;}
+
+/* WORKOUT ROW */
+.wr{padding:12px 16px;display:flex;align-items:flex-start;gap:12px;}
+.wr+.wr{border-top:1px solid var(--border);}
+.ck{width:26px;height:26px;min-width:26px;border-radius:50%;border:2px solid var(--border2);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-top:1px;transition:all .15s;}
+.ck.done{background:var(--green);border-color:var(--green);}
+.ck svg{display:none;width:13px;height:13px;}
+.ck.done svg{display:block;}
+.wi{flex:1;min-width:0;}
+.wn{font-size:14px;font-weight:600;color:var(--text);}
+.wd{font-size:12px;margin-top:3px;font-weight:500;}
+.tl{color:var(--pri);}
+.tt{color:var(--amber);}
+.te{color:var(--green);}
+.tg{color:var(--text3);}
+.tr{color:var(--red);}
+.ls{font-size:12px;color:var(--text2);margin-top:6px;padding:6px 10px;background:var(--bg);border-radius:var(--rs);line-height:1.5;}
+.lf{margin-top:8px;display:flex;flex-direction:column;gap:6px;}
+.lr{display:flex;gap:6px;}
+.inp{flex:1;font-size:13px;padding:9px 11px;border:1.5px solid var(--border2);border-radius:var(--rs);background:var(--bg);color:var(--text);font-family:inherit;min-width:0;transition:border-color .15s;}
+.inp:focus{outline:none;border-color:var(--pri);}
+.inp::placeholder{color:var(--text3);}
+.ins{width:82px;min-width:0;}
+.btn{font-size:13px;padding:9px 14px;border:none;border-radius:var(--rs);background:var(--pri);color:#fff;cursor:pointer;font-family:inherit;white-space:nowrap;font-weight:600;}
+.btn:active{opacity:.85;}
+.btn-ghost{background:transparent;border:1.5px solid var(--border2);color:var(--text);}
+
+/* BADGES */
+.badge{font-size:11px;padding:3px 9px;border-radius:20px;font-weight:600;white-space:nowrap;flex-shrink:0;}
+.bd{background:var(--green-bg);color:var(--green-text);}
+.bp{background:var(--amber-bg);color:var(--amber-text);}
+.bc{background:var(--pri-bg);color:var(--pri);}
+.bo{background:var(--bg);color:var(--text2);}
+
+/* PHASE PILLS */
+.pp{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;margin-right:5px;}
+.p1{background:var(--pri-bg);color:var(--pri);}
+.p2{background:var(--green-bg);color:var(--green-text);}
+.p3{background:var(--amber-bg);color:var(--amber-text);}
+.p4{background:var(--red-bg);color:var(--red-text);}
+
+/* MILESTONES */
+.mr{display:flex;align-items:center;gap:12px;padding:10px 0;}
+.mr+.mr{border-top:1px solid var(--border);}
+.md{width:11px;height:11px;min-width:11px;border-radius:50%;}
+.m1{background:var(--green);}
+.m2{background:var(--pri);}
+.m3{background:var(--border2);}
+
+/* CHART */
+.cw{display:flex;align-items:flex-end;gap:4px;height:80px;margin:8px 0 4px;}
+.bc2{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;}
+.bf{width:100%;border-radius:4px 4px 0 0;min-height:2px;}
+.bl{font-size:9px;color:var(--text3);}
+
+/* HR ZONES */
+.hz{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin:8px 0;}
+.hz>div{border-radius:var(--rs);padding:7px 4px;text-align:center;}
+.hz>div .hn{font-size:10px;font-weight:700;margin-bottom:2px;}
+.hz>div .hr2{font-size:9px;opacity:.75;}
+.hz1{background:#DBEAFE;color:#1e40af;}
+.hz2{background:#dcfce7;color:#14532d;}
+.hz3{background:#fef3c7;color:#78350f;}
+.hz4{background:#fee2e2;color:#7f1d1d;}
+.hz5{background:#fce7f3;color:#701a47;}
+
+
+/* COACH */
+.coach-wrap{display:flex;flex-direction:column;height:calc(100vh - 130px - var(--safe-bot));}
+.coach-messages{flex:1;overflow-y:auto;padding:8px 0;display:flex;flex-direction:column;gap:10px;}
+.msg{max-width:85%;padding:10px 14px;border-radius:14px;font-size:14px;line-height:1.5;}
+.msg-user{background:var(--pri);color:#fff;align-self:flex-end;border-bottom-right-radius:4px;}
+.msg-ai{background:var(--card);color:var(--text);align-self:flex-start;border-bottom-left-radius:4px;box-shadow:0 1px 3px rgba(0,0,0,.08);}
+.msg-ai.thinking{color:var(--text3);font-style:italic;}
+.coach-input-wrap{padding:10px 0 0;display:flex;gap:8px;align-items:flex-end;}
+.coach-textarea{flex:1;font-size:14px;padding:10px 13px;border:1.5px solid var(--border2);border-radius:14px;background:var(--card);color:var(--text);font-family:inherit;resize:none;min-height:44px;max-height:120px;line-height:1.4;}
+.coach-textarea:focus{outline:none;border-color:var(--pri);}
+.coach-send{width:44px;height:44px;border-radius:50%;background:var(--pri);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.coach-send svg{width:20px;height:20px;stroke:#fff;}
+.coach-send:disabled{opacity:.4;cursor:default;}
+.api-setup{background:var(--card);border-radius:var(--r);padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.06);}
+.api-setup h3{font-size:16px;font-weight:700;margin-bottom:8px;}
+.api-setup p{font-size:13px;color:var(--text2);margin-bottom:14px;line-height:1.5;}
+.quick-btns{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;}
+.qbtn{font-size:12px;padding:6px 11px;border:1.5px solid var(--border2);border-radius:20px;background:transparent;color:var(--text2);cursor:pointer;font-family:inherit;}
+.qbtn:active{background:var(--pri-bg);color:var(--pri);border-color:var(--pri);}
+
+/* WEEK CARD */
+.week-card{background:var(--card);border-radius:var(--r);margin-bottom:10px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.06);}
+.week-header{padding:13px 16px;cursor:pointer;user-select:none;}
+.week-header-top{display:flex;justify-content:space-between;align-items:flex-start;}
+
+/* AUSFALL BUTTONS */
+.abtns{display:flex;gap:6px;padding:0 16px 12px;flex-wrap:wrap;}
+.abtn{font-size:11px;padding:5px 10px;border:1.5px solid var(--border2);border-radius:20px;background:transparent;color:var(--text2);cursor:pointer;font-family:inherit;font-weight:500;}
+.abtn.active-ausfall{background:var(--amber-bg);color:var(--amber-text);border-color:var(--amber);}
+
+.empty{text-align:center;padding:28px 16px;color:var(--text3);font-size:13px;}
+
+/* HISTORY ENTRY */
+.hist-entry{padding:12px 0;}
+.hist-entry+.hist-entry{border-top:1px solid var(--border);}
+
+/* QUICK ADD BUTTON */
+.fab{position:fixed;bottom:calc(72px + var(--safe-bot));right:20px;width:52px;height:52px;border-radius:50%;background:var(--pri);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(26,86,160,.4);z-index:99;}
+.fab svg{width:24px;height:24px;stroke:#fff;}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="header-inner">
+      <div class="logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      </div>
+      <div class="header-text">
+        <h1>Berlin Marathon 2026</h1>
+        <p>Ziel: sub 4:00h &middot; Pace 5:41/km</p>
+      </div>
+      <div class="countdown-pill" id="countdown-pill">
+        <div class="cd-num" id="cd-num">-</div>
+        <div class="cd-lbl">Tage</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="s-heute" class="screen active"></div>
+  <div id="s-plan" class="screen"></div>
+  <div id="s-puls" class="screen"></div>
+  <div id="s-stats" class="screen"></div>
+  <div id="s-historie" class="screen"></div>
+  <div id="s-coach" class="screen"></div>
+
+  <nav class="navbar">
+    <button class="nb active" onclick="nav('heute',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>Heute<div class="nb-dot"></div>
+    </button>
+    <button class="nb" onclick="nav('plan',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/><path d="M9 12h6M9 16h4"/></svg>Plan<div class="nb-dot"></div>
+    </button>
+    <button class="nb" onclick="nav('puls',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>Puls<div class="nb-dot"></div>
+    </button>
+    <button class="nb" onclick="nav('stats',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>Stats<div class="nb-dot"></div>
+    </button>
+    <button class="nb" onclick="nav('historie',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Laufe<div class="nb-dot"></div>
+    </button>
+    <button class="nb" onclick="nav('coach',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Coach<div class="nb-dot"></div>
+    </button>
+  </nav>
+</div>
+
+<script>
+// ── INLINE PWA MANIFEST ──────────────────────────────────────────────────────
+(function(){
+  var icon = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="112" fill="#1a56a0"/><path d="M280 90L130 300h126l-30 122 186-230H286z" fill="white"/></svg>');
+  var manifest = {name:'Berlin Marathon 2026',short_name:'Berlin 2026',start_url:'.',display:'standalone',background_color:'#F0F4F9',theme_color:'#1a56a0',icons:[{src:icon,sizes:'512x512',type:'image/svg+xml'}]};
+  var blob = new Blob([JSON.stringify(manifest)],{type:'application/json'});
+  var url = URL.createObjectURL(blob);
+  document.getElementById('manifest-link').href = url;
+})();
+
+// ── DATA ─────────────────────────────────────────────────────────────────────
+var PLAN = [
+  {kw:1,datum:'05.04.',phase:1,workouts:[
+    {id:'w1a',type:'easy',name:'Easy Run (So 05.04.)',desc:'Pace ca. 6:10/km, lockere 8-10 km'},
+    {id:'w1b',type:'race',name:'Goeltzschtal Halbmarathon',desc:'Sa 11.04. - Wettkampf, Pace beobachten'}
+  ]},
+  {kw:2,datum:'13.04.',phase:1,workouts:[
+    {id:'w2a',type:'easy',name:'Easy Run 10 km',desc:'Di - Pace ca. 6:10/km, locker nach HM erholen'},
+    {id:'w2b',type:'long',name:'Langer Lauf 17 km',desc:'Sa - Pace 6:00-6:20/km'},
+    {id:'w2c',type:'gym',name:'Gym (Mo)',desc:'Kraft & Mobilitaet'},
+    {id:'w2d',type:'gym',name:'Gym (Do)',desc:'Rumpf, Hueftbeuger'}
+  ]},
+  {kw:3,datum:'20.04.',phase:1,workouts:[
+    {id:'w3a',type:'easy',name:'Easy Run 11 km',desc:'Di - Pace ca. 6:10/km'},
+    {id:'w3b',type:'long',name:'Langer Lauf 19 km',desc:'Sa - Pace ca. 6:00/km'},
+    {id:'w3c',type:'gym',name:'Gym (Mo)',desc:''},
+    {id:'w3d',type:'gym',name:'Gym (Do)',desc:''}
+  ]},
+  {kw:4,datum:'27.04.',phase:1,workouts:[
+    {id:'w4a',type:'easy',name:'Easy Run 10 km',desc:'Di - Erholungswoche'},
+    {id:'w4b',type:'long',name:'Langer Lauf 20 km',desc:'Sa - Pace ca. 6:10/km'},
+    {id:'w4c',type:'gym',name:'Gym (Mo)',desc:''},
+    {id:'w4d',type:'gym',name:'Gym (Do)',desc:''}
+  ]},
+  {kw:5,datum:'04.05.',phase:1,workouts:[
+    {id:'w5a',type:'easy',name:'Easy Run 11 km',desc:'Di'},
+    {id:'w5b',type:'long',name:'Langer Lauf 21 km',desc:'Sa - Pace ca. 6:00/km'},
+    {id:'w5c',type:'gym',name:'Gym (Mo)',desc:''},
+    {id:'w5d',type:'gym',name:'Gym (Do)',desc:''}
+  ]},
+  {kw:6,datum:'11.05.',phase:1,workouts:[
+    {id:'w6a',type:'easy',name:'Easy Run 10 km',desc:'Di'},
+    {id:'w6b',type:'long',name:'Langer Lauf 22 km',desc:'Sa - Meilenstein: 22 km!'},
+    {id:'w6c',type:'gym',name:'Gym (Mo)',desc:''},
+    {id:'w6d',type:'gym',name:'Gym (Do)',desc:''}
+  ]},
+  {kw:7,datum:'18.05.',phase:2,workouts:[
+    {id:'w7a',type:'tempo',name:'Tempo 10 km',desc:'Di - Pace 5:20/km'},
+    {id:'w7b',type:'long',name:'Langer Lauf 23 km',desc:'Sa'},
+    {id:'w7c',type:'gym',name:'Gym (Mo)',desc:''},
+    {id:'w7d',type:'gym',name:'Gym (Do)',desc:''}
+  ]},
+  {kw:8,datum:'25.05.',phase:2,workouts:[
+    {id:'w8a',type:'tempo',name:'6x1 km Intervall',desc:'Di - Pace 5:10/km, 90s Pause'},
+    {id:'w8b',type:'long',name:'Langer Lauf 24 km',desc:'Sa'},
+    {id:'w8c',type:'gym',name:'Gym (Mo)',desc:''},
+    {id:'w8d',type:'gym',name:'Gym (Do)',desc:''}
+  ]},
+  {kw:9,datum:'01.06.',phase:2,workouts:[
+    {id:'w9a',type:'tempo',name:'Tempo 12 km',desc:'Di - Erholungswoche, Pace 5:25/km'},
+    {id:'w9b',type:'long',name:'Langer Lauf 22 km',desc:'Sa - locker'},
+    {id:'w9c',type:'gym',name:'Gym (Mo)',desc:''},
+    {id:'w9d',type:'gym',name:'Gym (Do)',desc:''}
+  ]},
+  {kw:10,datum:'08.06.',phase:2,workouts:[
+    {id:'w10a',type:'tempo',name:'8x1 km Intervall',desc:'Di - Pace 5:10/km'},
+    {id:'w10b',type:'long',name:'Langer Lauf 25 km',desc:'Sa - Meilenstein: erster 25 km!'},
+    {id:'w10c',type:'gym',name:'Gym (Mo)',desc:''},
+    {id:'w10d',type:'gym',name:'Gym (Do)',desc:''}
+  ]},
+  {kw:11,datum:'15.06.',phase:2,workouts:[
+    {id:'w11a',type:'tempo',name:'Tempo 13 km',desc:'Di - Pace 5:20/km'},
+    {id:'w11b',type:'long',name:'Langer Lauf 26 km',desc:'Sa'},
+    {id:'w11c',type:'gym',name:'Gym (Mo)',desc:''},
+    {id:'w11d',type:'gym',name:'Gym (Do)',desc:''}
+  ]},
+  {kw:12,datum:'22.06.',phase:2,workouts:[
+    {id:'w12a',type:'tempo',name:'8x1 km Intervall',desc:'Di'},
+    {id:'w12b',type:'long',name:'Langer Lauf 27 km',desc:'Sa'},
+    {id:'w12c',type:'gym',name:'Gym (Mo)',desc:''},
+    {id:'w12d',type:'gym',name:'Gym (Do)',desc:''}
+  ]},
+  {kw:13,datum:'29.06.',phase:2,workouts:[
+    {id:'w13a',type:'easy',name:'Easy Run 12 km',desc:'Di - Erholungswoche'},
+    {id:'w13b',type:'long',name:'Langer Lauf 24 km',desc:'Sa - locker'},
+    {id:'w13c',type:'gym',name:'Gym (Mo)',desc:''},
+    {id:'w13d',type:'gym',name:'Gym (Do)',desc:''}
+  ]},
+  {kw:14,datum:'06.07.',phase:3,workouts:[
+    {id:'w14a',type:'tempo',name:'Marathonpace 14 km',desc:'Di - Pace 5:41/km'},
+    {id:'w14b',type:'long',name:'Langer Lauf 28 km',desc:'Sa'},
+    {id:'w14c',type:'gym',name:'Gym (Mo)',desc:''},
+    {id:'w14d',type:'gym',name:'Gym (Do)',desc:''}
+  ]},
+  {kw:15,datum:'13.07.',phase:3,workouts:[
+    {id:'w15a',type:'tempo',name:'10x1 km Intervall',desc:'Di - Pace 5:10/km'},
+    {id:'w15b',type:'long',name:'Langer Lauf 30 km',desc:'Sa - Meilenstein: erster 30 km!'},
+    {id:'w15c',type:'gym',name:'Gym (Mo)',desc:''},
+    {id:'w15d',type:'gym',name:'Gym (Do)',desc:''}
+  ]},
+  {kw:16,datum:'20.07.',phase:3,workouts:[
+    {id:'w16a',type:'tempo',name:'Marathonpace 15 km',desc:'Di - Erholungswoche'},
+    {id:'w16b',type:'long',name:'Langer Lauf 26 km',desc:'Sa - locker'},
+    {id:'w16c',type:'gym',name:'Gym (Mo)',desc:''},
+    {id:'w16d',type:'gym',name:'Gym (Do)',desc:''}
+  ]},
+  {kw:17,datum:'27.07.',phase:3,workouts:[
+    {id:'w17a',type:'tempo',name:'10x1 km Intervall',desc:'Di'},
+    {id:'w17b',type:'long',name:'Langer Lauf 31 km',desc:'Sa'},
+    {id:'w17c',type:'gym',name:'Gym (Mo)',desc:''},
+    {id:'w17d',type:'gym',name:'Gym (Do)',desc:''}
+  ]},
+  {kw:18,datum:'03.08.',phase:3,workouts:[
+    {id:'w18a',type:'tempo',name:'Marathonpace 16 km',desc:'Di - Pace 5:41/km'},
+    {id:'w18b',type:'long',name:'Langer Lauf 33 km',desc:'Sa - laengster Trainingslauf!'},
+    {id:'w18c',type:'gym',name:'Gym (Mo)',desc:''},
+    {id:'w18d',type:'gym',name:'Gym (Do)',desc:''}
+  ]},
+  {kw:19,datum:'10.08.',phase:3,workouts:[
+    {id:'w19a',type:'easy',name:'Easy Run 12 km',desc:'Di - Erholungswoche'},
+    {id:'w19b',type:'long',name:'Langer Lauf 28 km',desc:'Sa'},
+    {id:'w19c',type:'gym',name:'Gym (Mo)',desc:''},
+    {id:'w19d',type:'gym',name:'Gym (Do)',desc:''}
+  ]},
+  {kw:20,datum:'17.08.',phase:3,workouts:[
+    {id:'w20a',type:'tempo',name:'Marathonpace 16 km',desc:'Di'},
+    {id:'w20b',type:'long',name:'Langer Lauf 32 km',desc:'Sa'},
+    {id:'w20c',type:'gym',name:'Gym (Mo)',desc:''},
+    {id:'w20d',type:'gym',name:'Gym (Do)',desc:''}
+  ]},
+  {kw:21,datum:'24.08.',phase:4,workouts:[
+    {id:'w21a',type:'tempo',name:'Tempo 12 km',desc:'Di - Pace 5:20/km'},
+    {id:'w21b',type:'long',name:'Langer Lauf 25 km',desc:'Sa'},
+    {id:'w21c',type:'gym',name:'Gym (Mo)',desc:''},
+    {id:'w21d',type:'gym',name:'Gym (Do)',desc:''}
+  ]},
+  {kw:22,datum:'31.08.',phase:4,workouts:[
+    {id:'w22a',type:'tempo',name:'Marathonpace 10 km',desc:'Di'},
+    {id:'w22b',type:'long',name:'Langer Lauf 22 km',desc:'Sa'},
+    {id:'w22c',type:'gym',name:'Gym (Mo)',desc:''},
+    {id:'w22d',type:'gym',name:'Gym leicht (Do)',desc:''}
+  ]},
+  {kw:23,datum:'07.09.',phase:4,workouts:[
+    {id:'w23a',type:'easy',name:'Easy Run 8 km',desc:'Di - locker'},
+    {id:'w23b',type:'race',name:'Berliner Halbmarathon',desc:'So 14.09. - Generalprobe!'},
+    {id:'w23c',type:'gym',name:'Gym (Mo)',desc:''}
+  ]},
+  {kw:24,datum:'14.09.',phase:4,workouts:[
+    {id:'w24a',type:'easy',name:'Easy Run 10 km',desc:'Di'},
+    {id:'w24b',type:'long',name:'Langer Lauf 20 km',desc:'Sa - letzter langer Lauf'},
+    {id:'w24c',type:'gym',name:'Gym (Mo)',desc:''}
+  ]},
+  {kw:25,datum:'21.09.',phase:4,workouts:[
+    {id:'w25a',type:'easy',name:'Easy Run 6 km',desc:'Di - sehr locker'},
+    {id:'w25b',type:'race',name:'BMW Berlin-Marathon',desc:'So 27.09. - ZIEL: sub 4:00h!'},
+    {id:'w25c',type:'gym',name:'Nur Dehnen (Mo)',desc:''}
+  ]}
+];
+
+var MILESTONES = [
+  {kw:1,text:'Goeltzschtal Halbmarathon (Sa 11.04.)'},
+  {kw:6,text:'22 km - Basisziel erreicht'},
+  {kw:10,text:'Erster 25 km-Lauf'},
+  {kw:15,text:'Erster 30 km-Lauf'},
+  {kw:18,text:'Laengster Trainingslauf (33 km)'},
+  {kw:23,text:'Berliner Halbmarathon - Generalprobe'},
+  {kw:25,text:'BMW Berlin-Marathon - sub 4:00h!'}
+];
+
+var state={}, logs={}, ausfallWeeks={}, openWeeks={1:true};
+
+function save(){
+  localStorage.setItem('bm-state',JSON.stringify(state));
+  localStorage.setItem('bm-logs',JSON.stringify(logs));
+  localStorage.setItem('bm-ausfall',JSON.stringify(ausfallWeeks));
+}
+function load(){
+  try{state=JSON.parse(localStorage.getItem('bm-state')||'{}');}catch(e){state={};}
+  try{logs=JSON.parse(localStorage.getItem('bm-logs')||'{}');}catch(e){logs={};}
+  try{ausfallWeeks=JSON.parse(localStorage.getItem('bm-ausfall')||'{}');}catch(e){ausfallWeeks={};}
+}
+
+var HISTORY=[
+  {date:'01.01.2026',name:'Lauf',dist:13.65,pace:'5:12',hr:'',note:''},
+  {date:'04.01.2026',name:'Lauf',dist:10.16,pace:'5:12',hr:'',note:''},
+  {date:'07.01.2026',name:'Lauf',dist:9.38,pace:'5:09',hr:'',note:''},
+  {date:'11.01.2026',name:'Lauf',dist:14.66,pace:'5:38',hr:'',note:''},
+  {date:'14.01.2026',name:'Lauf',dist:9.10,pace:'5:39',hr:'',note:''},
+  {date:'18.01.2026',name:'Lauf',dist:16.10,pace:'5:14',hr:'',note:''},
+  {date:'21.01.2026',name:'Lauf',dist:8.58,pace:'5:19',hr:'',note:''},
+  {date:'24.01.2026',name:'Lauf',dist:11.36,pace:'5:43',hr:'',note:''},
+  {date:'01.02.2026',name:'Lauf',dist:16.32,pace:'5:13',hr:'',note:''},
+  {date:'04.02.2026',name:'Lauf',dist:12.13,pace:'5:25',hr:'',note:''},
+  {date:'08.02.2026',name:'Lauf',dist:18.21,pace:'5:32',hr:'',note:''},
+  {date:'10.02.2026',name:'Lauf',dist:12.44,pace:'4:55',hr:'',note:''},
+  {date:'15.02.2026',name:'Lauf',dist:21.07,pace:'5:13',hr:'',note:''},
+  {date:'20.02.2026',name:'Lauf',dist:10.04,pace:'5:48',hr:'',note:''},
+  {date:'28.02.2026',name:'Lauf',dist:13.51,pace:'5:00',hr:'',note:''},
+  {date:'05.03.2026',name:'Lauf',dist:12.47,pace:'4:50',hr:'',note:''},
+  {date:'11.03.2026',name:'Lauf',dist:14.14,pace:'5:50',hr:'',note:''},
+  {date:'18.03.2026',name:'Lauf',dist:10.15,pace:'4:49',hr:'',note:''},
+  {date:'27.03.2026',name:'Lauf',dist:14.07,pace:'5:17',hr:'',note:''},
+  {date:'29.03.2026',name:'Lauf',dist:21.01,pace:'5:18',hr:'',note:''},
+  {date:'03.04.2026',name:'Lauf',dist:8.07,pace:'4:37',hr:'',note:''}
+];
+
+function loadHistorie(){
+  try{var s=JSON.parse(localStorage.getItem('bm-historie')||'null');if(s)HISTORY=s;}catch(e){}
+}
+function saveHistorie(){
+  localStorage.setItem('bm-historie',JSON.stringify(HISTORY));
+}
+function paceToSecs(p){
+  var pts=p.split(':');if(pts.length<2)return 0;
+  return parseInt(pts[0]||0)*60+parseInt(pts[1]||0);
+}
+function fmtPace(s){
+  var m=Math.floor(s/60),sec=Math.round(s%60);
+  return m+':'+(sec<10?'0':'')+sec;
+}
+function getCurrentKw(){
+  var start=new Date('2026-04-05'),now=new Date();
+  var diff=Math.floor((now-start)/(7*24*3600*1000));
+  return Math.max(1,Math.min(25,diff+1));
+}
+function typeLabel(t){return{long:'Langer Lauf',tempo:'Tempo/Intervall',easy:'Easy Run',gym:'Gym',race:'Wettkampf'}[t]||t;}
+function typeCls(t){return{long:'tl',tempo:'tt',easy:'te',gym:'tg',race:'tr'}[t]||'';}
+function phaseName(p){return['','Basis','Aufbau','Peak','Tapering'][p]||'';}
+function phaseCls(p){return['','p1','p2','p3','p4'][p]||'p1';}
+function doneCount(week){var n=0;for(var i=0;i<week.workouts.length;i++){if(state[week.workouts[i].id])n++;}return n;}
+function checkSvg(){return '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>';}
+
+function updateCountdown(){
+  var race=new Date('2026-09-27');
+  var now=new Date();
+  var days=Math.ceil((race-now)/(24*3600*1000));
+  var el=document.getElementById('cd-num');
+  if(el)el.textContent=days>0?days:'Heute!';
+}
+
+function workoutRow(w,prefix){
+  var done=!!state[w.id];
+  var lg=logs[w.id]||{};
+  var saved='';
+  if(lg.dist||lg.pace||lg.hr||lg.hrmax){
+    var pts=[];
+    if(lg.dist)pts.push(lg.dist+' km');
+    if(lg.pace)pts.push(lg.pace+'/km');
+    if(lg.hr)pts.push('Puls '+lg.hr+' bpm');
+    if(lg.hrmax)pts.push('Max '+lg.hrmax+' bpm');
+    if(lg.feel)pts.push(lg.feel);
+    saved='<div class="ls">'+pts.join(' &middot; ')+(lg.note?' &middot; '+lg.note:'')+'</div>';
+  }else if(lg.note){saved='<div class="ls">'+lg.note+'</div>';}
+  var form='';
+  if(w.type!=='gym'){
+    form='<div class="lf">'
+      +'<div class="lr">'
+      +'<input class="inp" id="'+prefix+'dist-'+w.id+'" type="number" placeholder="km" step="0.1" value="'+(lg.dist||'')+'">'
+      +'<input class="inp" id="'+prefix+'pace-'+w.id+'" type="text" placeholder="Pace 5:41" value="'+(lg.pace||'')+'">'
+      +'</div>'
+      +'<div class="lr">'
+      +'<input class="inp ins" id="'+prefix+'hr-'+w.id+'" type="number" placeholder="Oe Puls" value="'+(lg.hr||'')+'">'
+      +'<input class="inp ins" id="'+prefix+'hrmax-'+w.id+'" type="number" placeholder="Max Puls" value="'+(lg.hrmax||'')+'">'
+      +'<select class="inp" id="'+prefix+'feel-'+w.id+'">'
+      +'<option value="">Gefuehl...</option>'
+      +'<option value="super"'+(lg.feel==='super'?' selected':'')+'>Super</option>'
+      +'<option value="gut"'+(lg.feel==='gut'?' selected':'')+'>Gut</option>'
+      +'<option value="okay"'+(lg.feel==='okay'?' selected':'')+'>Okay</option>'
+      +'<option value="schwer"'+(lg.feel==='schwer'?' selected':'')+'>Schwer</option>'
+      +'</select>'
+      +'</div>'
+      +'<div class="lr">'
+      +'<input class="inp" id="'+prefix+'note-'+w.id+'" type="text" placeholder="Notiz..." value="'+(lg.note||'')+'">'
+      +'<button class="btn" onclick="saveLog(\''+w.id+'\',\''+prefix+'\')">Speichern</button>'
+      +'</div>'
+      +'</div>';
+  }
+  return '<div class="wr">'
+    +'<button class="ck'+(done?' done':'')+'" onclick="toggle(\''+w.id+'\')">'+(done?checkSvg():' ')+'</button>'
+    +'<div class="wi">'
+    +'<div class="wn">'+w.name+'</div>'
+    +'<div class="wd '+typeCls(w.type)+'">'+typeLabel(w.type)+(w.desc?' &mdash; '+w.desc:'')+'</div>'
+    +saved+form
+    +'</div></div>';
+}
+
+function toggle(id){state[id]=!state[id];save();render();}
+function saveLog(id,prefix){
+  function g(k){var el=document.getElementById(prefix+k+'-'+id);return el?el.value:'';}
+  logs[id]={dist:g('dist'),pace:g('pace'),hr:g('hr'),hrmax:g('hrmax'),feel:g('feel'),note:g('note')};
+  save();render();
+}
+function markAusfall(kw,reason){
+  if(reason){ausfallWeeks[kw]=reason;}else{delete ausfallWeeks[kw];}
+  save();render();
+}
+
+function renderHeute(){
+  var kw=getCurrentKw();
+  var week=null;
+  for(var i=0;i<PLAN.length;i++){if(PLAN[i].kw===kw){week=PLAN[i];break;}}
+  if(!week)week=PLAN[0];
+  var totalDone=0,totalAll=0,weeksDone=0;
+  for(var i=0;i<PLAN.length;i++){
+    totalAll+=PLAN[i].workouts.length;
+    totalDone+=doneCount(PLAN[i]);
+    if(PLAN[i].kw<kw&&doneCount(PLAN[i])===PLAN[i].workouts.length)weeksDone++;
+  }
+  var pct=Math.round(totalDone/totalAll*100);
+  var weeksLeft=25-kw+1;
+  var h='<div class="sg">'
+    +'<div class="sc"><div class="sl">Aktuelle Woche</div><div class="sv">KW '+week.kw+'/25</div><div class="ss">'+week.datum+' &middot; '+phaseName(week.phase)+'</div></div>'
+    +'<div class="sc"><div class="sl">Fortschritt</div><div class="sv">'+pct+'%</div><div class="ss">'+totalDone+' von '+totalAll+' Einheiten</div></div>'
+    +'<div class="sc"><div class="sl">Noch</div><div class="sv">'+weeksLeft+' Wo.</div><div class="ss">bis Berlin</div></div>'
+    +'<div class="sc"><div class="sl">Wochen fertig</div><div class="sv">'+weeksDone+'</div><div class="ss">von 25</div></div>'
+    +'</div>';
+  var planKm=0,actualKm=0;
+  for(var i=0;i<week.workouts.length;i++){
+    var w=week.workouts[i];if(w.type==='gym')continue;
+    var m=w.name.match(/(\d+[.,]?\d*)\s*km/i);if(m)planKm+=parseFloat(m[1].replace(',','.'));
+    var lg=logs[w.id]||{};if(lg.dist)actualKm+=parseFloat(lg.dist)||0;
+  }
+  // add Historie runs that fall in current week
+  for(var i=0;i<HISTORY.length;i++){
+    var wo=getWeekOffset(HISTORY[i].date);
+    var kwOffset=getWeekOffset(week.datum+'2026');
+    if(wo===kwOffset) actualKm+=parseFloat(HISTORY[i].dist)||0;
+  }
+  if(planKm>0){
+    var kmPct=Math.min(100,Math.round(actualKm/planKm*100));
+    var kmColor=kmPct>=100?'var(--green)':'var(--pri)';
+    h+='<div class="stl">Wochenkilometer</div>'
+      +'<div class="card card-pad">'
+      +'<div style="display:flex;justify-content:space-between;margin-bottom:8px;">'
+      +'<span style="font-size:24px;font-weight:700;">'+actualKm.toFixed(1)+' km</span>'
+      +'<span style="font-size:13px;color:var(--text2);align-self:flex-end;">Plan: '+planKm+' km</span>'
+      +'</div>'
+      +'<div class="pb"><div class="pf" style="width:'+kmPct+'%;background:'+kmColor+'"></div></div>'
+      +'<div style="font-size:12px;color:var(--text2);margin-top:5px;">'+kmPct+'% des Wochenziels</div>'
+      +'</div>';
+  }
+  h+='<div class="stl">Diese Woche &mdash; <span class="pp '+phaseCls(week.phase)+'">'+phaseName(week.phase)+'</span></div>';
+  h+='<div class="card">';
+  for(var i=0;i<week.workouts.length;i++){h+=workoutRow(week.workouts[i],'h-');}
+  h+='</div>';
+  h+='<div class="stl">Meilensteine</div><div class="card card-pad">';
+  for(var i=0;i<MILESTONES.length;i++){
+    var ms=MILESTONES[i];
+    var cls=ms.kw<kw?'m1':ms.kw===kw?'m2':'m3';
+    var lbl=ms.kw<kw?'Erreicht':ms.kw===kw?'Diese Woche':'KW '+ms.kw;
+    h+='<div class="mr"><div class="md '+cls+'"></div><div style="flex:1;font-size:13px;">'+ms.text+'</div><div style="font-size:11px;color:var(--text2);">'+lbl+'</div></div>';
+  }
+  h+='</div>';
+  document.getElementById('s-heute').innerHTML=h;
+}
+
+function toggleWeek(kw){openWeeks[kw]=!openWeeks[kw];renderPlan();}
+
+function renderPlan(){
+  var kw=getCurrentKw();
+  var h='';
+  for(var i=0;i<PLAN.length;i++){
+    var week=PLAN[i];
+    var isOpen=!!openWeeks[week.kw];
+    var done=doneCount(week),total=week.workouts.length;
+    var pct=total?Math.round(done/total*100):0;
+    var ausfall=ausfallWeeks[week.kw]||'';
+    var badgeCls='bo',badgeText='ab '+week.datum;
+    if(ausfall){badgeCls='bp';badgeText=ausfall;}
+    else if(week.kw===kw){badgeCls='bc';badgeText='diese Woche';}
+    else if(week.kw<kw){badgeCls=done===total?'bd':'bp';badgeText=done+'/'+total;}
+    h+='<div class="week-card">'
+      +'<div class="week-header" onclick="toggleWeek('+week.kw+')">'
+      +'<div class="week-header-top">'
+      +'<div>'
+      +'<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">'
+      +'<span class="pp '+phaseCls(week.phase)+'">'+phaseName(week.phase)+'</span>'
+      +'<span style="font-size:14px;font-weight:600;">KW '+week.kw+' &mdash; '+week.datum+'</span>'
+      +'</div>'
+      +'<div style="font-size:12px;color:var(--text2);margin-top:3px;">'+done+'/'+total+' Einheiten</div>'
+      +'</div>'
+      +'<span class="badge '+badgeCls+'">'+badgeText+'</span>'
+      +'</div>'
+      +'<div class="pb" style="margin-top:8px;"><div class="pf" style="width:'+pct+'%"></div></div>'
+      +'</div>';
+    if(week.kw<=kw){
+      h+='<div class="abtns" onclick="event.stopPropagation()">';
+      var reasons=['krank','verletzt','urlaub'];
+      for(var r=0;r<reasons.length;r++){
+        var reason=reasons[r];
+        h+='<button class="abtn'+(ausfall===reason?' active-ausfall':'')+'" onclick="markAusfall('+week.kw+',\''+reason+'\')">'+reason.charAt(0).toUpperCase()+reason.slice(1)+'</button>';
+      }
+      if(ausfall)h+='<button class="abtn" style="color:var(--green);border-color:var(--green);" onclick="markAusfall('+week.kw+',\'\')">Zuruecksetzen</button>';
+      h+='</div>';
+    }
+    if(isOpen){
+      h+='<div class="card-divider">';
+      for(var j=0;j<week.workouts.length;j++){h+=workoutRow(week.workouts[j],'p-');}
+      h+='</div>';
+    }
+    h+='</div>';
+  }
+  document.getElementById('s-plan').innerHTML=h;
+}
+
+function renderPuls(){
+  var h='<div class="stl">Pace-Rechner</div>'
+    +'<div class="card card-pad">'
+    +'<div style="font-size:13px;color:var(--text2);margin-bottom:12px;">Zielzeit eingeben &rarr; alle Trainings-Paces werden berechnet.</div>'
+    +'<div style="display:flex;gap:8px;align-items:center;margin-bottom:14px;">'
+    +'<input class="inp" type="text" id="goal-time" placeholder="z.B. 3:55" style="width:90px;" oninput="calcPaces()" value="4:00">'
+    +'<span style="font-size:13px;color:var(--text2);">Std:Min Zielzeit</span>'
+    +'</div>'
+    +'<div id="pace-results"></div>'
+    +'</div>';
+  h+='<div class="stl">Herzfrequenz-Zonen</div>'
+    +'<div style="font-size:13px;color:var(--text2);margin-bottom:10px;">Anpassen nach deinem maximalen Puls.</div>'
+    +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">'
+    +'<input class="inp" type="number" id="hrmax-inp" value="185" style="width:90px;" oninput="updateZones()">'
+    +'<span style="font-size:13px;color:var(--text2);">bpm Max-Puls</span>'
+    +'</div>'
+    +'<div class="hz" id="hr-zones-grid"></div>';
+  h+='<div class="card card-pad" style="margin-top:4px;">'
+    +'<div style="font-size:13px;font-weight:600;margin-bottom:10px;">Zonen im Training</div>'
+    +'<div style="font-size:13px;color:var(--text2);line-height:1.9;">'
+    +'Easy Run &amp; Langer Lauf &rarr; <strong>Zone 2</strong> (60-70%)<br>'
+    +'Tempolauf &rarr; <strong>Zone 3-4</strong> (70-85%)<br>'
+    +'Intervall &rarr; <strong>Zone 4-5</strong> (85-95%)<br>'
+    +'Marathonrennen &rarr; <strong>Zone 3-4</strong> (75-85%)'
+    +'</div></div>';
+  // Collect HR data from Plan logs + Historie
+  var hrRuns=[];
+  for(var i=0;i<PLAN.length;i++){
+    for(var j=0;j<PLAN[i].workouts.length;j++){
+      var w=PLAN[i].workouts[j];
+      if(w.type!=='gym'&&logs[w.id]&&logs[w.id].hr){
+        var lg0=logs[w.id];
+        hrRuns.push({lbl:w.name.split(' ')[0].substring(0,5), hr:parseInt(lg0.hr||0), hrmax:parseInt(lg0.hrmax||lg0.hr||0)});
+      }
+    }
+  }
+  for(var i=0;i<HISTORY.length;i++){
+    if(HISTORY[i].hr){
+      hrRuns.push({lbl:HISTORY[i].date.substring(0,5), hr:parseInt(HISTORY[i].hr||0), hrmax:parseInt(HISTORY[i].hr||0)});
+    }
+  }
+  // sort by insertion order (plan first, then historie by date)
+  var hmax185=parseInt((document.getElementById('hrmax-inp')||{value:'185'}).value)||185;
+  h+='<div class="stl">Puls-Verlauf (Ø Herzfrequenz)</div>';
+  if(hrRuns.length===0){h+='<div class="empty">Noch keine Pulsdaten eingetragen.</div>';}
+  else{
+    var recent=hrRuns.slice(-12);
+    var maxHrVal=0;
+    for(var i=0;i<recent.length;i++){if(recent[i].hr>maxHrVal)maxHrVal=recent[i].hr;}
+    // zone boundaries based on max HR
+    var z2lo=Math.round(hmax185*0.60),z2hi=Math.round(hmax185*0.70);
+    var z3hi=Math.round(hmax185*0.80),z4hi=Math.round(hmax185*0.90);
+    function hrColor(avgHr){
+      if(avgHr>=z4hi)return '#dc2626';       // Z5
+      if(avgHr>=z3hi)return '#d97706';       // Z4
+      if(avgHr>=z2hi)return '#f59e0b';       // Z3
+      if(avgHr>=z2lo)return '#16a34a';       // Z2
+      return '#2563c4';                       // Z1
+    }
+    h+='<div class="card card-pad"><div class="cw" style="height:90px;">';
+    for(var i=0;i<recent.length;i++){
+      var r=recent[i];
+      var barH=maxHrVal>0?Math.max(4,Math.round(r.hr/maxHrVal*72)):4;
+      var col=hrColor(r.hr);
+      h+='<div class="bc2">'
+        +'<div style="font-size:9px;color:var(--text2);text-align:center;margin-bottom:2px;">'+r.hr+'</div>'
+        +'<div class="bf" style="height:'+barH+'px;background:'+col+';border-radius:4px 4px 0 0;"></div>'
+        +'<div class="bl">'+r.lbl+'</div>'
+        +'</div>';
+    }
+    h+='</div>'
+      +'<div style="font-size:11px;color:var(--text2);margin-top:6px;">Farbe = Ø Puls-Zone &middot; Zahl = Ø bpm</div>'
+      +'</div>';
+  }
+  document.getElementById('s-puls').innerHTML=h;
+  updateZones();calcPaces();
+}
+
+function calcPaces(){
+  var inp=document.getElementById('goal-time'),el=document.getElementById('pace-results');
+  if(!inp||!el)return;
+  var pts=inp.value.split(':');if(pts.length<2)return;
+  var totalMin=parseInt(pts[0]||0)*60+parseInt(pts[1]||0);
+  if(!totalMin||totalMin<60)return;
+  var raceSec=Math.round(totalMin*60/42.195);
+  var rows=[
+    {label:'Marathontempo (Renntempo)',sec:raceSec,col:'var(--amber)'},
+    {label:'Langer Lauf (locker)',sec:Math.round(raceSec*1.15),col:'var(--pri)'},
+    {label:'Easy Run',sec:Math.round(raceSec*1.20),col:'var(--pri)'},
+    {label:'Tempolauf (Zone 3)',sec:Math.round(raceSec*0.95),col:'var(--red)'},
+    {label:'Intervall (Zone 4)',sec:Math.round(raceSec*0.88),col:'var(--red)'}
+  ];
+  var html='';
+  for(var i=0;i<rows.length;i++){
+    html+='<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border);">'
+      +'<span style="font-size:13px;color:var(--text2);">'+rows[i].label+'</span>'
+      +'<span style="font-size:14px;font-weight:700;color:'+rows[i].col+';">'+fmtPace(rows[i].sec)+'/km</span>'
+      +'</div>';
+  }
+  el.innerHTML=html;
+}
+
+function updateZones(){
+  var inp=document.getElementById('hrmax-inp'),grid=document.getElementById('hr-zones-grid');
+  if(!inp||!grid)return;
+  var hmax=parseInt(inp.value)||185;
+  var zones=[[0,0.60],[0.60,0.70],[0.70,0.80],[0.80,0.90],[0.90,1.01]];
+  var cls=['hz1','hz2','hz3','hz4','hz5'];
+  var names=['Z1 Erholung','Z2 Ausdauer','Z3 Tempo','Z4 Schwelle','Z5 Max'];
+  var html='';
+  for(var i=0;i<zones.length;i++){
+    var lo=Math.round(hmax*zones[i][0]);
+    var hi=i===4?hmax:Math.round(hmax*zones[i][1])-1;
+    html+='<div class="'+cls[i]+'"><div class="hn">'+names[i]+'</div><div class="hr2">'+lo+'-'+hi+'</div></div>';
+  }
+  grid.innerHTML=html;
+}
+
+function getWeekOffset(dateStr){
+  var pts=dateStr.split('.');if(pts.length<3)return -1;
+  var d=new Date(parseInt(pts[2]),parseInt(pts[1])-1,parseInt(pts[0]));
+  var day=(d.getDay()+6)%7;
+  var monday=new Date(d);monday.setDate(d.getDate()-day);
+  var start=new Date('2025-12-29');
+  return Math.floor((monday-start)/(7*24*3600*1000));
+}
+
+function renderStats(){
+  var kw=getCurrentKw();
+  var totalKm=0,paceSecs=[],hrVals=[],totalRuns=0;
+  for(var i=0;i<HISTORY.length;i++){
+    totalKm+=HISTORY[i].dist||0;totalRuns++;
+    if(HISTORY[i].pace){var s=paceToSecs(HISTORY[i].pace);if(s>0)paceSecs.push(s);}
+    if(HISTORY[i].hr)hrVals.push(parseInt(HISTORY[i].hr));
+  }
+  for(var i=0;i<PLAN.length;i++){for(var j=0;j<PLAN[i].workouts.length;j++){
+    var pw=PLAN[i].workouts[j];if(pw.type==='gym')continue;
+    var plg=logs[pw.id];if(!plg||!plg.dist)continue;
+    totalKm+=parseFloat(plg.dist)||0;totalRuns++;
+    if(plg.pace){var ps=paceToSecs(plg.pace);if(ps>0)paceSecs.push(ps);}
+    if(plg.hr)hrVals.push(parseInt(plg.hr));
+  }}
+  var avgPaceSec=paceSecs.length?Math.round(paceSecs.reduce(function(a,b){return a+b;},0)/paceSecs.length):0;
+  var avgHr=hrVals.length?Math.round(hrVals.reduce(function(a,b){return a+b;},0)/hrVals.length):0;
+  var h='<div class="sg">'
+    +'<div class="sc"><div class="sl">Laeufe gesamt</div><div class="sv">'+totalRuns+'</div><div class="ss">seit Jan 2026</div></div>'
+    +'<div class="sc"><div class="sl">Kilometer gesamt</div><div class="sv">'+totalKm.toFixed(0)+'</div><div class="ss">km</div></div>'
+    +'<div class="sc"><div class="sl">Ø Pace</div><div class="sv">'+(avgPaceSec?fmtPace(avgPaceSec):'-')+'</div><div class="ss">min/km</div></div>'
+    +'<div class="sc"><div class="sl">Ø Puls</div><div class="sv">'+(avgHr?avgHr+' bpm':'-')+'</div><div class="ss">'+(hrVals.length?hrVals.length+' Laeufe':'keine Daten')+'</div></div>'
+    +'</div>';
+  // Form trend
+  var recentPaces=[];
+  var s4t=HISTORY.slice();
+  s4t.sort(function(a,b){return a.date.split('.').reverse().join('')>b.date.split('.').reverse().join('')?1:-1;});
+  for(var i=0;i<s4t.length;i++){if(s4t[i].pace)recentPaces.push(paceToSecs(s4t[i].pace));}
+  for(var i=0;i<PLAN.length;i++){for(var j=0;j<PLAN[i].workouts.length;j++){var tw=PLAN[i].workouts[j];if(tw.type==='gym')continue;var tlg=logs[tw.id];if(tlg&&tlg.pace)recentPaces.push(paceToSecs(tlg.pace));}}
+  if(recentPaces.length>=4){
+    var half=Math.floor(recentPaces.length/2);
+    var avgOld=Math.round(recentPaces.slice(0,half).reduce(function(a,b){return a+b;},0)/half);
+    var avgNew=Math.round(recentPaces.slice(-half).reduce(function(a,b){return a+b;},0)/half);
+    var diff2=avgOld-avgNew;
+    var tCol,tIcon,tText;
+    if(diff2>5){tCol='var(--green)';tIcon='&#9650;';tText=fmtPace(Math.abs(diff2))+' min/km schneller';}
+    else if(diff2<-5){tCol='var(--red)';tIcon='&#9660;';tText=fmtPace(Math.abs(diff2))+' min/km langsamer';}
+    else{tCol='var(--amber)';tIcon='&#9644;';tText='Pace stabil';}
+    h+='<div class="card card-pad" style="margin-bottom:12px;">'
+      +'<div style="display:flex;align-items:center;gap:12px;">'
+      +'<span style="font-size:28px;color:'+tCol+';">'+tIcon+'</span>'
+      +'<div><div style="font-size:14px;font-weight:600;color:'+tCol+';">Form-Trend: '+tText+'</div>'
+      +'<div style="font-size:12px;color:var(--text2);margin-top:3px;">Ø aktuell: '+fmtPace(avgNew)+' &middot; Ø vorher: '+fmtPace(avgOld)+'</div>'
+      +'</div></div></div>';
+  }
+  // Weekly km chart
+  var weekMap={};
+  function addWM(dateStr,km){
+    var pts2=dateStr.split('.');if(pts2.length<3)return;
+    var diff=getWeekOffset(dateStr);if(diff<0)return;
+    var wk='W'+diff,lbl=pts2[0]+'.'+pts2[1];
+    if(!weekMap[wk])weekMap[wk]={km:0,lbl:lbl,sort:diff};
+    weekMap[wk].km+=km;
+  }
+  for(var i=0;i<HISTORY.length;i++)addWM(HISTORY[i].date,HISTORY[i].dist||0);
+  for(var i=0;i<PLAN.length;i++){for(var j=0;j<PLAN[i].workouts.length;j++){
+    var cw=PLAN[i].workouts[j];if(cw.type==='gym')continue;
+    var clg=logs[cw.id];if(!clg||!clg.dist)continue;
+    addWM(PLAN[i].datum+'2026',parseFloat(clg.dist)||0);
+  }}
+  var weeks=[];for(var k in weekMap)weeks.push(weekMap[k]);
+  weeks.sort(function(a,b){return a.sort-b.sort;});
+  var maxWkKm=0;for(var i=0;i<weeks.length;i++)if(weeks[i].km>maxWkKm)maxWkKm=weeks[i].km;
+  h+='<div class="stl">Wochenkilometer</div><div class="card card-pad">';
+  if(weeks.length===0){h+='<div class="empty">Noch keine Daten</div>';}
+  else{
+    var rw=weeks.slice(-12);
+    h+='<div class="cw" style="height:90px;align-items:flex-end;">';
+    for(var i=0;i<rw.length;i++){
+      var w=rw[i];
+      var barH=maxWkKm>0?Math.max(3,Math.round(w.km/maxWkKm*70)):3;
+      var col=w.km>=40?'#16a34a':w.km>=25?'#2563c4':'#93c5fd';
+      h+='<div class="bc2">'
+        +'<div style="font-size:9px;color:var(--text2);text-align:center;margin-bottom:2px;">'+w.km.toFixed(0)+'</div>'
+        +'<div class="bf" style="height:'+barH+'px;background:'+col+';"></div>'
+        +'<div class="bl">'+w.lbl+'</div>'
+        +'</div>';
+    }
+    h+='</div>';
+  }
+  h+='</div>';
+  // Plan completion
+  var perPhase=[0,0,0,0,0],donePerPhase=[0,0,0,0,0];
+  for(var i=0;i<PLAN.length;i++){if(ausfallWeeks[PLAN[i].kw])continue;perPhase[PLAN[i].phase]+=PLAN[i].workouts.length;donePerPhase[PLAN[i].phase]+=doneCount(PLAN[i]);}
+  var recent2=[];for(var i=0;i<PLAN.length;i++){if(PLAN[i].kw<=kw)recent2.push(PLAN[i]);}
+  if(recent2.length>10)recent2=recent2.slice(-10);
+  h+='<div class="stl">Trainingsplan - Abschlussrate</div><div class="card card-pad"><div class="cw">';
+  if(recent2.length===0){h+='</div><div class="empty">Noch keine Daten</div>';}
+  else{
+    for(var i=0;i<recent2.length;i++){
+      var w2=recent2[i];var d=doneCount(w2),tot=w2.workouts.length;
+      var pct=tot?Math.round(d/tot*100):0;
+      var bH=Math.max(2,Math.round(pct*72/100));
+      var col=ausfallWeeks[w2.kw]?'#d97706':pct===100?'#16a34a':pct>0?'#2563c4':'#e2e8f0';
+      h+='<div class="bc2"><div class="bf" style="height:'+bH+'px;background:'+col+'"></div><div class="bl">KW'+w2.kw+'</div></div>';
+    }
+    h+='</div>';
+  }
+  h+='</div>';
+  h+='<div class="stl">Fortschritt nach Phase</div><div class="card card-pad">';
+  var pNames=['','Basis (KW 1-6)','Aufbau (KW 7-13)','Peak (KW 14-20)','Tapering (KW 21-25)'];
+  for(var i=1;i<=4;i++){
+    var pct2=perPhase[i]?Math.round(donePerPhase[i]/perPhase[i]*100):0;
+    h+='<div style="margin-bottom:13px;">'
+      +'<div style="display:flex;justify-content:space-between;margin-bottom:5px;">'
+      +'<span style="font-size:13px;font-weight:500;">'+pNames[i]+'</span>'
+      +'<span style="font-size:12px;color:var(--text2);">'+donePerPhase[i]+'/'+perPhase[i]+' &middot; '+pct2+'%</span>'
+      +'</div>'
+      +'<div class="pb"><div class="pf" style="width:'+pct2+'%"></div></div>'
+      +'</div>';
+  }
+  h+='</div>';
+  // Export
+  h+='<div class="stl">Daten exportieren</div><div class="card card-pad">'
+    +'<div style="font-size:13px;color:var(--text2);margin-bottom:12px;">Alle Trainingsdaten kopieren und in Claude einfuegen zur Auswertung.</div>'
+    +'<button class="btn" style="width:100%;padding:12px;font-size:14px;" onclick="exportData()">Daten kopieren</button>'
+    +'<div id="export-ok" style="display:none;margin-top:10px;font-size:13px;color:var(--green);text-align:center;font-weight:500;">Kopiert! Jetzt in Claude einfuegen.</div>'
+    +'</div>';
+  document.getElementById('s-stats').innerHTML=h;
+}
+
+function exportData(){
+  var kw=getCurrentKw(),totalDone=0,totalAll=0;
+  for(var i=0;i<PLAN.length;i++){totalAll+=PLAN[i].workouts.length;totalDone+=doneCount(PLAN[i]);}
+  var lines=['=== Berlin Marathon Trainingsdaten ===','Stand: KW '+kw+'/25 | '+totalDone+'/'+totalAll+' Einheiten',''];
+  for(var i=0;i<PLAN.length;i++){
+    var week=PLAN[i];if(week.kw>kw)continue;
+    var done=doneCount(week);
+    var ausfall=ausfallWeeks[week.kw]?' ['+ausfallWeeks[week.kw]+']':'';
+    lines.push('--- KW '+week.kw+' ('+week.datum+') ['+phaseName(week.phase)+'] '+done+'/'+week.workouts.length+ausfall+' ---');
+    for(var j=0;j<week.workouts.length;j++){
+      var w=week.workouts[j];var isDone=!!state[w.id];var lg=logs[w.id]||{};
+      var hasLog=lg.dist||lg.pace||lg.hr||lg.note;
+      if(!isDone&&!hasLog)continue;
+      var line='  '+(isDone?'OK':'o ')+' '+w.name;
+      var pts=[];
+      if(lg.dist)pts.push(lg.dist+' km');if(lg.pace)pts.push(lg.pace+'/km');
+      if(lg.hr)pts.push('Puls '+lg.hr);if(lg.hrmax)pts.push('Max '+lg.hrmax);
+      if(lg.feel)pts.push(lg.feel);if(lg.note)pts.push(lg.note);
+      if(pts.length)line+=' -> '+pts.join(', ');
+      lines.push(line);
+    }
+    lines.push('');
+  }
+  var text=lines.join('\n');
+  navigator.clipboard.writeText(text).then(function(){
+    var el=document.getElementById('export-ok');
+    if(el){el.style.display='block';setTimeout(function(){el.style.display='none';},3000);}
+  }).catch(function(){prompt('Alles markieren und kopieren:',text);});
+}
+
+function addHistoryEntry(){
+  var date=document.getElementById('h-date').value;
+  var dist=parseFloat(document.getElementById('h-dist').value);
+  var pace=document.getElementById('h-pace').value;
+  var hr=document.getElementById('h-hr').value;
+  var note=document.getElementById('h-note').value;
+  if(!date||!dist)return;
+  var pts=date.split('-');
+  HISTORY.push({date:pts[2]+'.'+pts[1]+'.'+pts[0],name:'Lauf',dist:dist,pace:pace,hr:hr,note:note});
+  HISTORY.sort(function(a,b){return a.date.split('.').reverse().join('')>b.date.split('.').reverse().join('')?1:-1;});
+  saveHistorie();renderHistorie();renderStats();
+}
+function saveHistoryHr(idx,inputId){
+  var el=document.getElementById(inputId);if(!el)return;
+  HISTORY[idx].hr=el.value;saveHistorie();renderHistorie();renderStats();
+}
+function deleteHistoryEntry(idx){
+  HISTORY.splice(idx,1);saveHistorie();renderHistorie();renderStats();
+}
+
+function renderHistorie(){
+  var today=new Date();
+  var dd=String(today.getDate()).padStart(2,'0');
+  var mm=String(today.getMonth()+1).padStart(2,'0');
+  var yyyy=today.getFullYear();
+  var todayVal=yyyy+'-'+mm+'-'+dd;
+  var h='<div class="stl">Lauf eintragen</div>'
+    +'<div class="card card-pad">'
+    +'<div class="lr" style="margin-bottom:8px;">'
+    +'<input class="inp" type="date" id="h-date" style="flex:1;" value="'+todayVal+'">'
+    +'<input class="inp" type="number" id="h-dist" placeholder="km" step="0.1" style="width:85px;">'
+    +'</div>'
+    +'<div class="lr" style="margin-bottom:8px;">'
+    +'<input class="inp" id="h-pace" type="text" placeholder="Pace 5:30">'
+    +'<input class="inp" id="h-hr" type="number" placeholder="Oe Puls" style="width:100px;">'
+    +'</div>'
+    +'<div class="lr">'
+    +'<input class="inp" id="h-note" type="text" placeholder="Notiz...">'
+    +'<button class="btn" onclick="addHistoryEntry()">+ Eintragen</button>'
+    +'</div>'
+    +'</div>';
+  h+='<div class="stl">Alle Laeufe ('+HISTORY.length+')</div>'
+    +'<div class="card">';
+  var sorted=HISTORY.slice().reverse();
+  for(var i=0;i<sorted.length;i++){
+    var run=sorted[i];
+    var origIdx=HISTORY.length-1-i;
+    var editId='edit-'+origIdx;
+    var pts2=[];
+    if(run.pace)pts2.push(run.pace+'/km');
+    if(run.hr)pts2.push('Puls '+run.hr+' bpm');
+    if(run.note)pts2.push(run.note);
+    h+='<div class="hist-entry" style="padding:12px 16px;">'
+      +'<div style="display:flex;align-items:baseline;justify-content:space-between;">'
+      +'<span style="font-size:13px;font-weight:600;">'+run.date+'</span>'
+      +'<span style="font-size:15px;font-weight:700;color:var(--pri);">'+(run.dist||0).toFixed(1)+' km</span>'
+      +'</div>'
+      +(pts2.length?'<div style="font-size:12px;color:var(--text2);margin-top:3px;">'+pts2.join(' &middot; ')+'</div>':'')
+      +'<div style="display:flex;gap:6px;margin-top:8px;">'
+      +'<input class="inp" id="'+editId+'" type="number" placeholder="Oe Puls eintragen..." value="'+(run.hr||'')+'" style="flex:1;font-size:12px;padding:7px 10px;">'
+      +'<button class="btn btn-ghost" style="font-size:12px;padding:7px 12px;" onclick="saveHistoryHr('+origIdx+',&quot;'+editId+'&quot;)">Speichern</button>'
+      +'<button onclick="deleteHistoryEntry('+origIdx+')" style="background:none;border:none;color:var(--text3);font-size:18px;padding:0 6px;cursor:pointer;line-height:1;">x</button>'
+      +'</div>'
+      +'</div>';
+  }
+  h+='</div>';
+  document.getElementById('s-historie').innerHTML=h;
+}
+
+
+var coachHistory = [];
+var coachApiKey = '';
+
+function loadCoach(){
+  try{ coachApiKey = localStorage.getItem('bm-apikey') || ''; }catch(e){}
+  try{ coachHistory = JSON.parse(localStorage.getItem('bm-chat') || '[]'); }catch(e){ coachHistory = []; }
+}
+function saveCoach(){
+  try{
+    localStorage.setItem('bm-apikey', coachApiKey);
+    localStorage.setItem('bm-chat', JSON.stringify(coachHistory.slice(-40)));
+  }catch(e){}
+}
+
+function buildContext(){
+  var kw = getCurrentKw();
+  var week = null;
+  for(var i=0;i<PLAN.length;i++){if(PLAN[i].kw===kw){week=PLAN[i];break;}}
+  var totalDone=0,totalAll=0;
+  for(var i=0;i<PLAN.length;i++){totalAll+=PLAN[i].workouts.length;totalDone+=doneCount(PLAN[i]);}
+  // Merge alle Laeufe: HISTORY + Plan-Logs mit Distanz, sortiert nach Datum
+  var allRuns = [];
+  for(var i=0;i<HISTORY.length;i++){
+    var hr=HISTORY[i];
+    allRuns.push({
+      sortKey: hr.date.split('.').reverse().join(''),
+      text: hr.date+': '+hr.dist+' km'+(hr.pace?' | Pace '+hr.pace:'')+(hr.hr?' | Puls '+hr.hr+' bpm':'')+(hr.note?' ('+hr.note+')':'')
+    });
+  }
+  for(var i=0;i<PLAN.length;i++){
+    for(var j=0;j<PLAN[i].workouts.length;j++){
+      var pw=PLAN[i].workouts[j];
+      if(pw.type==='gym')continue;
+      var plg=logs[pw.id];
+      if(!plg||!plg.dist)continue;
+      var planDate=PLAN[i].datum+'2026';
+      var sk=planDate.split('.').reverse().join('');
+      allRuns.push({
+        sortKey: sk,
+        text: PLAN[i].datum+'2026'+' '+pw.name+': '+plg.dist+' km'+(plg.pace?' | Pace '+plg.pace:'')+(plg.hr?' | Puls '+plg.hr+' bpm':'')+(plg.feel?' | Gefuehl: '+plg.feel:'')+(plg.note?' ('+plg.note+')':'')
+      });
+    }
+  }
+  allRuns.sort(function(a,b){return a.sortKey>b.sortKey?1:-1;});
+  var lastRuns = allRuns.slice(-10);
+  var lastRunsText = lastRuns.map(function(r){return r.text;}).join('\n');
+  var ctx = 'Du bist ein erfahrener Laufcoach. Antworte auf Deutsch, kurz und direkt - du bist in einer mobilen App.\n\n';
+  ctx += 'ATHLETEN-PROFIL:\n';
+  ctx += '- Ziel: BMW Berlin Marathon 27.09.2026, sub 4:00h (Pace 5:41/km)\n';
+  ctx += '- Aktuelle Trainingswoche: KW '+kw+'/25 (Phase: '+phaseName(week?week.phase:1)+')\n';
+  ctx += '- Gesamtfortschritt: '+totalDone+'/'+totalAll+' Einheiten abgeschlossen\n';
+  ctx += '- Gesamtkilometer 2026: '+HISTORY.reduce(function(s,r){return s+(r.dist||0);},0).toFixed(0)+' km\n';
+  ctx += '- Letzte '+lastRuns.length+' Laeufe (chronologisch):\n'+lastRunsText+'\n';
+  if(week){
+    // current week km from plan logs
+    var weekActualKm=0;
+    for(var i=0;i<week.workouts.length;i++){
+      var lg2=logs[week.workouts[i].id]||{};
+      if(lg2.dist)weekActualKm+=parseFloat(lg2.dist)||0;
+    }
+    // add Historie runs in current week
+    var kwOffset=getWeekOffset(week.datum+'2026');
+    var histWeekRuns=[];
+    for(var i=0;i<HISTORY.length;i++){
+      if(getWeekOffset(HISTORY[i].date)===kwOffset){
+        weekActualKm+=parseFloat(HISTORY[i].dist)||0;
+        histWeekRuns.push(HISTORY[i]);
+      }
+    }
+    ctx += '\nAKTUELLE WOCHE (KW '+kw+', Wochenkilometer bisher: '+weekActualKm.toFixed(1)+' km):\n';
+    ctx += 'Plan-Einheiten:\n';
+    for(var i=0;i<week.workouts.length;i++){
+      var w=week.workouts[i];
+      var isDone=!!state[w.id];
+      var lg=logs[w.id]||{};
+      ctx += '- '+(isDone?'[OK]':'[offen]')+' '+w.name+(lg.dist?' | '+lg.dist+' km':'')+(lg.pace?' | '+lg.pace+'/km':'')+(lg.hr?' | Puls '+lg.hr:'')+'\n';
+    }
+    if(histWeekRuns.length>0){
+      ctx += 'Zusaetzliche Laeufe diese Woche:\n';
+      for(var i=0;i<histWeekRuns.length;i++){
+        var r=histWeekRuns[i];
+        ctx += '- '+r.date+': '+r.dist+' km'+(r.pace?' Pace '+r.pace:'')+(r.hr?' Puls '+r.hr:'')+(r.note?' ('+r.note+')':'')+'\n';
+      }
+    }
+  }
+  return ctx;
+}
+
+function renderCoach(){
+  var hasKey = !!coachApiKey;
+  var h = '';
+  if(!hasKey){
+    h = '<div class="api-setup">'
+      +'<h3>KI-Coach einrichten</h3>'
+      +'<p>Gib deinen Anthropic API-Key ein. Er wird nur lokal auf deinem Geraet gespeichert.</p>'
+      +'<div class="lr" style="margin-bottom:10px;">'
+      +'<input class="inp" type="password" id="api-key-inp" placeholder="sk-ant-api03-...">'
+      +'<button class="btn" onclick="saveApiKey()">Speichern</button>'
+      +'</div>'
+      +'<p style="font-size:12px;color:var(--text3);">API-Key bekommst du unter console.anthropic.com</p>'
+      +'</div>';
+    document.getElementById('s-coach').innerHTML = h;
+    return;
+  }
+  h = '<div class="coach-wrap">'
+    +'<div class="quick-btns" id="quick-btns">'
+    +'<button class="qbtn" data-q="Wie ist mein aktueller Trainingsstand?" onclick="quickSend(this)">Trainingsstand</button>'
+    +'<button class="qbtn" data-q="Bin ich auf Kurs fuer sub 4h Berlin?" onclick="quickSend(this)">Auf Kurs?</button>'
+    +'<button class="qbtn" data-q="Was sollte ich diese Woche beachten?" onclick="quickSend(this)">Diese Woche</button>'
+    +'<button class="qbtn" data-q="Ich bin erschoepft. Was empfiehlst du?" onclick="quickSend(this)">Bin muede</button>'
+    +'<button class="qbtn" data-q="Tipps fuer den Berlin Marathon Renntag?" onclick="quickSend(this)">Race Day</button>'
+    +'</div>'
+    +'<div class="coach-messages" id="coach-msgs">';
+  if(coachHistory.length===0){
+    h += '<div class="msg msg-ai">Hallo! Ich bin dein persoenlicher Laufcoach fuer den Berlin Marathon. Ich kenne deinen Trainingsplan und deine bisherigen Laeufe. Was moechtest du wissen?</div>';
+  } else {
+    for(var i=0;i<coachHistory.length;i++){
+      var m=coachHistory[i];
+      h += '<div class="msg '+(m.role==='user'?'msg-user':'msg-ai')+'">'+m.content.replace(/\n/g,'<br>')+'</div>';
+    }
+  }
+  h += '</div>'
+    +'<div class="coach-input-wrap">'
+    +'<textarea class="coach-textarea" id="coach-inp" placeholder="Frag deinen Coach..." rows="1" onkeydown="coachKeyDown(event)"></textarea>'
+    +'<button class="coach-send" id="coach-send-btn" onclick="sendCoachMsg()">'
+    +'<svg viewBox="0 0 24 24" fill="none" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>'
+    +'</button>'
+    +'</div>'
+    +'<button style="margin-top:6px;font-size:11px;background:none;border:none;color:var(--text3);cursor:pointer;padding:4px;" onclick="clearCoachHistory()">Gespraech loeschen</button>'
+    +'</div>';
+  document.getElementById('s-coach').innerHTML = h;
+  scrollCoach();
+}
+
+function saveApiKey(){
+  var inp = document.getElementById('api-key-inp');
+  if(!inp||!inp.value.trim())return;
+  coachApiKey = inp.value.trim();
+  saveCoach();
+  renderCoach();
+}
+
+function scrollCoach(){
+  var el = document.getElementById('coach-msgs');
+  if(el) el.scrollTop = el.scrollHeight;
+}
+
+function coachKeyDown(e){
+  if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendCoachMsg();}
+}
+
+function quickSend(btn){
+  var msg = btn.getAttribute('data-q');
+  var inp = document.getElementById('coach-inp');
+  if(inp) inp.value = msg;
+  sendCoachMsg();
+}
+
+function addMsg(role, content){
+  var el = document.getElementById('coach-msgs');
+  if(!el) return;
+  var div = document.createElement('div');
+  div.className = 'msg ' + (role==='user'?'msg-user':'msg-ai');
+  div.innerHTML = content.replace(/\n/g,'<br>');
+  el.appendChild(div);
+  scrollCoach();
+  return div;
+}
+
+async function sendCoachMsg(){
+  var inp = document.getElementById('coach-inp');
+  var btn = document.getElementById('coach-send-btn');
+  if(!inp||!inp.value.trim())return;
+  var userMsg = inp.value.trim();
+  inp.value = '';
+  inp.style.height = 'auto';
+  if(btn) btn.disabled = true;
+  coachHistory.push({role:'user', content:userMsg});
+  addMsg('user', userMsg);
+  var thinkDiv = addMsg('assistant', '...');
+  if(thinkDiv) thinkDiv.className = 'msg msg-ai thinking';
+  try {
+    var messages = [{role:'user', content:buildContext()+' \n\nErste Nachricht des Athleten - begruesse ihn kurz wenn es das erste Mal ist.'}];
+    for(var i=0;i<coachHistory.length;i++){
+      messages.push({role:coachHistory[i].role, content:coachHistory[i].content});
+    }
+    // remove the duplicate last user message
+    messages = messages.slice(0,-1);
+    messages.push({role:'user', content:coachHistory[coachHistory.length-1].content});
+    var resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key': coachApiKey,
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'
+      },
+      body: JSON.stringify({
+        model:'claude-haiku-4-5-20251001',
+        max_tokens:400,
+        system: buildContext(),
+        messages: coachHistory.slice(0,-1).concat([{role:'user',content:userMsg}])
+      })
+    });
+    var data = await resp.json();
+    if(data.error){throw new Error(data.error.message);}
+    var reply = data.content[0].text;
+    if(thinkDiv){thinkDiv.className='msg msg-ai';thinkDiv.innerHTML=reply.replace(/\n/g,'<br>');}
+    coachHistory.push({role:'assistant', content:reply});
+    saveCoach();
+  } catch(e){
+    if(thinkDiv){thinkDiv.className='msg msg-ai';thinkDiv.innerHTML='Fehler: '+e.message;}
+  }
+  if(btn) btn.disabled = false;
+  scrollCoach();
+}
+
+function clearCoachHistory(){
+  coachHistory = [];
+  saveCoach();
+  renderCoach();
+}
+
+var currentScreen='heute';
+function render(){
+  if(currentScreen==='heute')renderHeute();
+  else if(currentScreen==='plan')renderPlan();
+  else if(currentScreen==='puls')renderPuls();
+  else if(currentScreen==='stats')renderStats();
+  else if(currentScreen==='historie')renderHistorie();
+  else if(currentScreen==='coach')renderCoach();
+}
+function nav(name,btn){
+  currentScreen=name;
+  var ss=document.querySelectorAll('.screen');for(var i=0;i<ss.length;i++)ss[i].classList.remove('active');
+  var bs=document.querySelectorAll('.nb');for(var i=0;i<bs.length;i++)bs[i].classList.remove('active');
+  document.getElementById('s-'+name).classList.add('active');
+  btn.classList.add('active');
+  render();
+}
+load();loadHistorie();loadCoach();
+openWeeks[getCurrentKw()]=true;
+updateCountdown();
+renderHeute();
+</script>
+</body>
+</html>
